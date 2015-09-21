@@ -8,7 +8,7 @@
 php cron.php
 ```
 
-守护运行
+后台运行
 ```
-./corn.service.php [start|stop|restart]
+./corn.service.sh [start|stop|restart]
 ```
