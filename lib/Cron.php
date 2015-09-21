@@ -11,10 +11,16 @@ declare(ticks = 1);
 class Cron
 {
 
-    /**任务路径*/
+    /**
+     * 任务路径
+     * @var string
+     */
     protected $cronPath = '';
 
-    /**配置*/
+    /**
+     * 配置
+     * @var array
+     */
     protected $config = array();
 
     /**
@@ -33,6 +39,9 @@ class Cron
             $userinfo = posix_getgrnam($setting['user']);
             posix_setuid($groupinfo['uid']);
         }
+        
+        include __DIR__ . '/ParseCrontab.php';
+        include __DIR__ . '/ParseInterval.php';
     }
 
     /**
@@ -84,18 +93,14 @@ class Cron
      */
     protected function getRunTime(array $conf)
     {
-        //timeOffset 1420387200代表2015-1-5 00:00:00号星期一作为偏移值的始点
-        static $status = 9999999999, $timeOffset = 1420387200;
+        $timestamp = time();
         if (isset($conf['interval'])) {
-            $time = time() - $timeOffset;
-            $time = $timeOffset + $time - ($time % $conf['interval']) + $conf['interval'];
-            return $time + $conf['offset'];
+            return ParseInterval::parse($conf, $timestamp);
         } elseif (isset($conf['crontab'])) {
             //var_dump($conf['crontab']);
-            $timestamp = time();
             //while (true) {
             //$t = microtime(true);
-            $time = ParseCrontab::parse($conf['crontab'], $timestamp);
+            $time = ParseCrontab::parse($conf, $timestamp);
             //echo "nowIs :" . date('Y-m-d H:i:s', $timestamp) . "\t" . $time . "  :  " . date('Y-m-d H:i:s', $time) . "\tuseTime:" .
             //     (microtime(true) - $t) . "\n";
             return $time;
@@ -103,7 +108,7 @@ class Cron
             //usleep(50000);
             //}
         }
-        return $status;
+        return 9999999999;
     }
 
     /**

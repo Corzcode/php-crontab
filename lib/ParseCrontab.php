@@ -26,12 +26,13 @@ class ParseCrontab
      * 解析自动任务
      * 返回下次执行的时间戳
      *
-     * @param  string $crontab
+     * @param  array  $crontab
      * @param  int    $timestamp
      * @return int
      */
-    public static function parse($crontab, $timestamp = null)
+    public static function parse(array $conf, $timestamp = null)
     {
+        $crontab = $conf['crontab'];
         $times = preg_split('/\s+/', $crontab);
         isset($timestamp) || $timestamp = time();
         $timeInfo = getdate($timestamp);
